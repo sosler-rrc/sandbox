@@ -29,16 +29,16 @@ export default function Login() {
             name="password"
             required
           />
+                    
+          <button 
+            className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white w-[200px] cursor-pointer"
+            formAction={login}
+          >Login</button>
           
           <button 
             className="p-[4px] mb-2 rounded-sm bg-sky-600 hover:bg-sky-800 text-white w-[200px] cursor-pointer"
             formAction={signup}
           >Sign up</button>
-          
-          <button 
-            className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white w-[200px] cursor-pointer"
-            formAction={login}
-          >Login</button>
         </form>
       </div>
     </div>
