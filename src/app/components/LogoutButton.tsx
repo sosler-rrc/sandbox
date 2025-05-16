@@ -26,7 +26,7 @@ export default function LogoutButton() {
     <button
       onClick={handleSignOut}
       disabled={isLoading}
-      className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-70"
+      className="bg-red-600 hover:bg-red-700 text-white cursor-pointer font-semibold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-70"
     >
       {isLoading ? 'Signing out...' : 'Sign Out'}
     </button>

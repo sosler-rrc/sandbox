@@ -7,16 +7,17 @@ import { createClient } from '@/utils/supabase/server'
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  console.log("login", formData)
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const response = await supabase.auth.signInWithPassword(data)
 
-  if (error) {
-    redirect('/error')
+  if (response.error) {
+    return {
+      error: "Invalid credentials, please try again."
+    }
   }
 
   revalidatePath('/', 'layout')
@@ -25,16 +26,28 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   const supabase = await createClient()
-
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const response = await supabase.auth.signUp({
+    email: data.email,
+    password: data.password
+  })
 
-  if (error) {
-    redirect('/error')
+  console.log(response)
+
+  if (response.error) {
+    return {
+      error: "An error occured, please try again."
+    }
+  }
+
+  if(response.data.user){
+    return {
+      error: "A user already exists with this email"
+    }
   }
 
   revalidatePath('/', 'layout')
