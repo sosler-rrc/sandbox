@@ -52,6 +52,21 @@ export default function Page() {
             name="password"
             required
           />
+
+          {
+            method == "signup" &&
+            <>
+              <label htmlFor="confirmPassword">Confirm Password:</label>
+              <input 
+                className="mb-1 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
+                placeholder="Confirm Password"
+                type='password'
+                id="confirmPassword" 
+                name="confirmPassword"
+                required
+              />
+            </>
+          }
           {
             method == "login" && 
             <Link href={"/login/reset-confirmation"} className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
