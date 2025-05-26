@@ -15,9 +15,6 @@ export async function reset(formData: FormData){
   }
   const response = {} as any
 
-  // const response = await supabase.auth.updateUser({ password: data.password })
-
-
   if (response.error) {
     return {
       error: response.error.message

@@ -11,14 +11,7 @@ export async function resetPasswordEmail(formData: FormData){
     }
   }
 
-    const error = {} as any
-
-  // const { data, error } = await supabase.auth.resetPasswordForEmail(
-  //   email,
-  //   {
-  //     redirectTo: "http://localhost:3000/login/recover-account"
-  //   }
-  // )
+  const error = {} as any
 
   if(error){
     return {

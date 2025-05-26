@@ -10,26 +10,22 @@ datasource db {
 
 model AppUser {
   id        Int           @id @default(autoincrement())
+  email     String        @unique
   username  String        @unique
+  keyId     Int           @unique
+  userKey   UserKey       @relation(fields: [keyId], references: [id], onDelete: Cascade)
   sessions  UserSession[]
-
-  @@map("app_user")
 }
 
-model UserKeys {
-  id             Int      @id
+model UserKey {
+  id             Int      @id @default(autoincrement())
   hashedPassword String
-  userId         Int      @map("user_id")
-  user           AppUser  @relation(fields: [userId], references: [id])
-  
-  @@map("user_keys")
+  user           AppUser?
 }
 
 model UserSession {
-  id         String   @id
-  expiresAt  DateTime @map("expires_at") @db.Timestamptz()
-  userId     Int      @map("user_id")
-  user       AppUser  @relation(fields: [userId], references: [id])
-
-  @@map("user_session")
+  id        String   @id
+  expiresAt DateTime @db.Timestamptz()
+  userId    Int      
+  user      AppUser  @relation(fields: [userId], references: [id])
 }

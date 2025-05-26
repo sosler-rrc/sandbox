@@ -1,6 +1,9 @@
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 import { PrismaClient } from "../../../prisma/generated/prisma";
+import { Session } from "@/models/Session";
+import { User } from "@/models/User";
+import { getClient } from "../prisma";
 
 export function generateSessionToken(): string {
   const bytes = new Uint8Array(20);
@@ -9,8 +12,13 @@ export function generateSessionToken(): string {
   return token;
 }
 
+export function getSessionIdFromToken(token: string): string {
+  const hash = sha256(new TextEncoder().encode(token));
+  return encodeHexLowerCase(hash);
+}
+
 export async function createSession(token: string, userId: number): Promise<Session> {
-  const prisma = new PrismaClient()
+  const prisma = getClient();
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const session: Session = {
     id: sessionId,
@@ -26,8 +34,8 @@ export async function createSession(token: string, userId: number): Promise<Sess
   return dbSession;
 }
 
-export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
-  const prisma = new PrismaClient()
+export async function validateSessionToken(token: string): Promise<SessionValidationResult | null> {
+  const prisma = getClient();
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const userSession = await prisma.userSession.findFirst({
     where: {
@@ -39,10 +47,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
   });
 
   if(userSession == null){
-    return {
-      session: null,
-      user: null
-    }
+    return null
   }
   
   const session: Session = {
@@ -50,7 +55,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
   }
 
   const user: User = {
-    id: userSession.userId
+    ...userSession.user
   }
 
   if(Date.now() >= session.expiresAt.getTime()){
@@ -80,7 +85,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
-  const prisma = new PrismaClient()
+  const prisma = getClient();
   prisma.userSession.delete({
     where: {
       id: sessionId
@@ -89,7 +94,7 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 }
 
 export async function invalidateAllSessions(userId: number): Promise<void> {
-  const prisma = new PrismaClient()
+  const prisma = getClient();
   prisma.userSession.deleteMany({
     where: {
       userId: userId
@@ -97,16 +102,6 @@ export async function invalidateAllSessions(userId: number): Promise<void> {
   });
 }
 
-const dateOffset = (days:number) => (1000 * 60 * 60 * 24 * days);
+export const dateOffset = (days:number) => (1000 * 60 * 60 * 24 * days);
 
 export type SessionValidationResult = { session: Session; user: User } | { session: null; user: null };
-
-export interface Session {
-  id: string;
-  userId: number;
-  expiresAt: Date;
-}
-
-export interface User {
-  id: number;
-}
