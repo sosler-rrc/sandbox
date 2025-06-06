@@ -1,19 +1,12 @@
-import Image from "next/image";
 import { redirect } from "next/navigation";
-import LogoutButton from "./components/LogoutButton";
+import { getCurrentSession } from "@/utils/auth/cookies";
 
 export default async function Home() {
+  const session = await getCurrentSession();
 
-  // // Redirect if no user is found (this is a backup to your middleware protection)
-  // if (!data.user) {
-  //   redirect("/login");
-  // }
-
-  return (
-    <div>
-      Hello 
-      <br/>
-      <LogoutButton />
-    </div>
-  );
+  if(session){
+    redirect("/dashboard")
+  } else {
+    redirect("/login")
+  }
 }

@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { dateOffset, validateSessionToken } from "./utils/auth/session";
 
 export async function middleware(request: NextRequest) {
   const allowedRoutes = [

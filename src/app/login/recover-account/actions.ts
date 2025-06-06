@@ -1,5 +1,4 @@
 'use server'
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function reset(formData: FormData){
@@ -13,14 +12,7 @@ export async function reset(formData: FormData){
       error: "Passwords do not match."
     }
   }
-  const response = {} as any
 
-  if (response.error) {
-    return {
-      error: response.error.message
-    }
-  }
 
-  revalidatePath('/', 'layout')
   redirect('/login')
 } 

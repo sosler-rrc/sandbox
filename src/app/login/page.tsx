@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UserSignup } from "@/models/UserSignup";
-import { LoginResponse } from "@/models/LoginResponse";
-import { UserLogin } from "@/models/UserLogin";
+import { loginAction, signupAction } from "./actions";
 
 export default function Page() {
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -36,22 +35,15 @@ export default function Page() {
     setIsLoading(true);
 
     try {
-      let response: Response;
+      let response: { message: string};
       
       if(method == "login"){
         const loginData = {
           email: formData.get('email') as string,
           password: formData.get('password') as string,
-        } as UserLogin;
+        };
 
-        response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'same-origin',
-          body: JSON.stringify(loginData)
-        });
+        response = await loginAction(loginData.email, loginData.password);
         
       } else {
         const signupData = {
@@ -60,31 +52,11 @@ export default function Page() {
           confirmPassword: formData.get('confirmPassword') as string
         } as UserSignup;
 
-        response = await fetch('/api/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'same-origin',
-          body: JSON.stringify(signupData)
-        });
+        response = await signupAction(signupData);
       }
 
-      const data: LoginResponse<UserSignup> = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
+      setLoginError(response.message);
 
-      if(!data.success){
-        setLoginError(data.message);
-        return; // Don't redirect on error
-      }
-
-      const redirectUrl = searchParams.get('redirect') || '/';
-      console.log(redirectUrl)
-      router.push(redirectUrl);
-      
     } catch (e) {
       console.error('Auth error:', e);
       setLoginError(e instanceof Error ? e.message : 'An unexpected error occurred');

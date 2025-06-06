@@ -1,5 +1,5 @@
 export interface User {
-  id: number,
-  username: string,
+  id: string,
   email: string,
+  emailVerified: boolean
 }
