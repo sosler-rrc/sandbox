@@ -1,22 +1,29 @@
 "use client"
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { reset } from "./actions";
+import { redirect, useSearchParams } from "next/navigation";
+import { resetPassword } from "./actions";
+import { getClient } from "@/utils/prisma";
 
-export default function Page() {
+export default async function Page() {
   const [formError, setFormError] = useState<string | null>(null);
   const searchParams = useSearchParams()
-  const method = searchParams.get("type") ?? "login"
+  const token = searchParams.get("token")
+  const client = getClient();
+  
+  if(token == null){
+    redirect("/error");
+  }
+  
+  const resetToken = await client.passwordResetToken.findFirst({where: { token: token }})
 
-  //reset ui state
-  useEffect(() => {
-    setFormError(null);
-  }, [method]);
-
-  const handleReset = async  (formData: FormData) => {
+    
+  if(resetToken == null){
+    redirect("/error");
+  }
+  
+  const handleResetPassword = async  (formData: FormData) => {
     setFormError(null)
-    const response = await reset(formData)
+    const response = await resetPassword(formData, token)
     if(response.error){
       setFormError(response.error)
     }
@@ -25,7 +32,7 @@ export default function Page() {
   return (
     <div className="w-full h-screen flex justify-center">
       <div className="flex flex-col justify-center">
-        <form className="flex flex-col justify-center" action={handleReset}>
+        <form className="flex flex-col justify-center" action={handleResetPassword}>
           <label htmlFor="password">Password:</label>
           <input 
             className="mb-1 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 

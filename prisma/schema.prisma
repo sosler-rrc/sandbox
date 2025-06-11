@@ -11,19 +11,19 @@ datasource db {
 model AppUser {
   id            String        @id @default(uuid())
   email         String        @unique
-  keyId         String           @unique
   emailVerified Boolean       @default(false)
   createdAt     DateTime      @default(now())
-  userKey       UserKey       @relation(fields: [keyId], references: [id], onDelete: Cascade)
+  userKey                   UserKey?
   sessions                  UserSession[]
   emailVerificationTokens   EmailVerificationToken[]
   passwordResetTokens       PasswordResetToken[]
 }
 
 model UserKey {
-  id             String       @id @default(uuid())
+  id             String   @id @default(uuid())
   hashedPassword String
-  user           AppUser?
+  userId         String   @unique
+  user           AppUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSession {

@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
-import { getCurrentSession } from "@/utils/auth/cookies";
 import LogoutButton from "../components/LogoutButton";
-import { getClient } from "@/utils/prisma";
+import { getCurrentSession } from "@/utils/auth/cookies";
 
 export default async function Home() {
   const session = await getCurrentSession();
-  const client = await getClient();
 
   if(!session){
     redirect("/login")
@@ -15,7 +13,7 @@ export default async function Home() {
     <div>
       <span>Hello {session.user?.email}</span>
       <br/>
-      <span>You're email is {session.user?.emailVerified ? "" : "not"} verified</span>      
+      <span>You're email is {session.user?.emailVerified ? "" : "not"} verified</span>
       <br/>
       <LogoutButton />
     </div>
