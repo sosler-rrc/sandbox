@@ -1,5 +1,6 @@
 'use server'
-import { dateOffset, generateToken } from '@/utils/auth/token';
+import { dateOffset } from '@/utils/auth/session';
+import { generateToken } from '@/utils/auth/token';
 import { Helper } from '@/utils/helper';
 import { resend, SendEmailHtml } from "@/utils/email";
 import { getClient } from '@/utils/prisma';
@@ -41,7 +42,7 @@ export async function resetPasswordEmail(formData: FormData){
         <a>
       </div>
     `;
-    const subject = "Sandbox: Reset your password"
+    const subject = "GambaShack: Reset your password"
     await SendEmailHtml(html, user.email, subject);
   }
 

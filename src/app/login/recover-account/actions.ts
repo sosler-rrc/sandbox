@@ -43,7 +43,7 @@ export async function resetPassword(formData: FormData, token: string){
         hashedPassword: hashedPass
       },
       where: {
-        id: resetToken.userId
+        userId: resetToken.userId
       },
     }
   )

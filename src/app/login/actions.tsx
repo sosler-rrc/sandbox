@@ -7,6 +7,7 @@ import { generateToken } from "@/utils/auth/token";
 import { Helper } from "@/utils/helper";
 import { getClient } from "@/utils/prisma";
 import { hash, verify } from "@node-rs/argon2";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -27,26 +28,28 @@ export async function loginAction(email: string, password: string){
       message: "No user with this email exists, please create an account"
     } 
   }
-
-  const result = await verify(existingUser.userKey.hashedPassword, password);
-  if(!result){
-    return {
-      message: "Incorrect credentials, please try again or reset your password."
+  if(existingUser.userKey != null) {
+    const result = await verify(existingUser.userKey.hashedPassword, password);
+    if(!result){
+      return {
+        message: "Incorrect credentials, please try again or reset your password."
+      }
     }
+
+    const sessionToken = generateToken();
+    const session = await createSession(sessionToken, existingUser.id);
+    const cookieStore = await cookies();
+
+    cookieStore.set("session", sessionToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      expires: session.expiresAt,
+      path: "/",
+    });
   }
-
-  const sessionToken = generateToken();
-  const session = await createSession(sessionToken, existingUser.id);
-  const cookieStore = await cookies();
-
-  cookieStore.set("session", sessionToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    expires: session.expiresAt,
-    path: "/",
-  });
   
+  revalidatePath('/', 'layout')
   return redirect("/");
 }
 
@@ -76,21 +79,21 @@ export async function signupAction(newUser: UserSignup) {
       message: "A user with this email already exists"
     }
   }
-
-  const hashedPass = await hash(newUser.password);
+  
   const appUser = await client.appUser.create({
     data: {
       email: newUser.email,
       emailVerified: false,
-      userKey: {
-        create: {
-          hashedPassword: hashedPass
-        }
-      }
     }
   });
 
-  
+  const hashedPass = await hash(newUser.password);
+  await client.userKey.create({
+    data: {
+      hashedPassword: hashedPass,
+      userId: appUser.id
+    }
+  })
 
   const sessionToken = generateToken();
   const session = await createSession(sessionToken, appUser.id);
@@ -122,6 +125,7 @@ export async function logoutAction(){
   }
 
   deleteSessionTokenCookie();
-
+  
+  revalidatePath('/', 'layout')
   return redirect("/login")
 }

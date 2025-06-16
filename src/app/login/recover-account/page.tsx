@@ -8,16 +8,8 @@ export default async function Page() {
   const [formError, setFormError] = useState<string | null>(null);
   const searchParams = useSearchParams()
   const token = searchParams.get("token")
-  const client = getClient();
-  
-  if(token == null){
-    redirect("/error");
-  }
-  
-  const resetToken = await client.passwordResetToken.findFirst({where: { token: token }})
 
-    
-  if(resetToken == null){
+  if(token == null){
     redirect("/error");
   }
   
