@@ -4,8 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UserSignup } from "@/models/UserSignup";
 import { loginAction, signupAction } from "./actions";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -58,7 +56,7 @@ export default function Page() {
       <div className="flex flex-col justify-center">
         <form className="flex flex-col justify-center w-3xs" action={handleLogin}>
           <label htmlFor="email">Email:</label>
-          <Input 
+          <input 
             className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
             placeholder="Email"
             type="email"
@@ -69,7 +67,7 @@ export default function Page() {
           />
 
           <label htmlFor="password">Password:</label>
-          <Input 
+          <input 
             className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
             placeholder="Password"
             type='password'
@@ -83,7 +81,7 @@ export default function Page() {
             method == "signup" &&
             <>
               <label htmlFor="confirmPassword">Confirm Password:</label>
-              <Input 
+              <input 
                 className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
                 placeholder="Confirm Password"
                 type='password'
@@ -111,12 +109,12 @@ export default function Page() {
           {
             method == "signup" ?
             <div className="flex flex-col mt-4">
-              <Button 
+              <button 
                 className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white w-[200px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing Up...' : 'Sign Up'}
-              </Button>
+              </button>
               <span>
                 Already a user?
                 <Link href={"/login?type=login"} className="text-blue-600 hover:text-blue-800 cursor-pointer">
@@ -126,12 +124,12 @@ export default function Page() {
             </div>
             :
             <div className="flex flex-col mt-4">
-              <Button 
+              <button 
                 className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed justify-center"
                 disabled={isLoading}
               >
                 {isLoading ? 'Logging In...' : 'Login'}
-              </Button>
+              </button>
               <span>
                 Not a user yet? 
                 <Link href={"/login?type=signup"} className="text-blue-600 hover:text-blue-800 cursor-pointer">
