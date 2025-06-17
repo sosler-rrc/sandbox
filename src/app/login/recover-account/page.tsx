@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { redirect, useSearchParams } from "next/navigation";
 import { resetPassword } from "./actions";
-import { getClient } from "@/utils/prisma";
+import { getClient } from "@/lib/prisma";
 
 export default async function Page() {
   const [formError, setFormError] = useState<string | null>(null);

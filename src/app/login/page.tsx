@@ -4,31 +4,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UserSignup } from "@/models/UserSignup";
 import { loginAction, signupAction } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
-  const router = useRouter();
   const method = searchParams.get("type") ?? "login";
 
   // reset ui state
   useEffect(() => {
     setLoginError("");
   }, [method]);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const res = await fetch('/api/session'); // a simple API route that checks cookie validity
-      const data = await res.json();
-
-      if (data.valid) {
-        router.push('/'); // Or '/dashboard', etc.
-      }
-    };
-
-    checkSession();
-  }, []);
 
   const handleLogin = async (formData: FormData) => {
     setLoginError(null);
@@ -68,9 +56,9 @@ export default function Page() {
   return (
     <div className="w-full h-screen flex justify-center">
       <div className="flex flex-col justify-center">
-        <form className="flex flex-col justify-center" action={handleLogin}>
+        <form className="flex flex-col justify-center w-3xs" action={handleLogin}>
           <label htmlFor="email">Email:</label>
-          <input 
+          <Input 
             className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
             placeholder="Email"
             type="email"
@@ -81,7 +69,7 @@ export default function Page() {
           />
 
           <label htmlFor="password">Password:</label>
-          <input 
+          <Input 
             className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
             placeholder="Password"
             type='password'
@@ -95,7 +83,7 @@ export default function Page() {
             method == "signup" &&
             <>
               <label htmlFor="confirmPassword">Confirm Password:</label>
-              <input 
+              <Input 
                 className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50" 
                 placeholder="Confirm Password"
                 type='password'
@@ -115,7 +103,7 @@ export default function Page() {
 
           {
             loginError &&
-            <span className="mt-2 text-sm text-red-400 font-semibold">
+            <span className="mt-2 text-sm text-red-400 font-semibold whitespace-pre-line">
               {loginError}
             </span>
           }
@@ -123,12 +111,12 @@ export default function Page() {
           {
             method == "signup" ?
             <div className="flex flex-col mt-4">
-              <button 
+              <Button 
                 className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white w-[200px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing Up...' : 'Sign Up'}
-              </button>
+              </Button>
               <span>
                 Already a user?
                 <Link href={"/login?type=login"} className="text-blue-600 hover:text-blue-800 cursor-pointer">
@@ -138,12 +126,12 @@ export default function Page() {
             </div>
             :
             <div className="flex flex-col mt-4">
-              <button 
-                className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white w-[200px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              <Button 
+                className="p-[4px] mb-2 rounded-sm bg-green-600 hover:bg-green-800 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed justify-center"
                 disabled={isLoading}
               >
                 {isLoading ? 'Logging In...' : 'Login'}
-              </button>
+              </Button>
               <span>
                 Not a user yet? 
                 <Link href={"/login?type=signup"} className="text-blue-600 hover:text-blue-800 cursor-pointer">

@@ -1,15 +1,18 @@
 "use server"
 import { UserSignup } from "@/models/UserSignup";
-import { deleteSessionTokenCookie } from "@/utils/auth/cookies";
-import { createEmailVerification } from "@/utils/auth/email-verification";
-import { createSession, getSessionIdFromToken } from "@/utils/auth/session";
-import { generateToken } from "@/utils/auth/token";
-import { Helper } from "@/utils/helper";
-import { getClient } from "@/utils/prisma";
+import { Helper } from "@/lib/helper";
+import { getClient } from "@/lib/prisma";
 import { hash, verify } from "@node-rs/argon2";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { 
+  createEmailVerification, 
+  createSession, 
+  deleteSessionTokenCookie, 
+  generateToken,
+  getSessionIdFromToken 
+} from "@/lib/auth";
 
 export async function loginAction(email: string, password: string){
   const client = getClient();

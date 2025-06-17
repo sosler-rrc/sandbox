@@ -1,11 +1,11 @@
 'use server'
-import { dateOffset } from '@/utils/auth/session';
-import { generateToken } from '@/utils/auth/token';
-import { Helper } from '@/utils/helper';
-import { resend, SendEmailHtml } from "@/utils/email";
-import { getClient } from '@/utils/prisma';
+import { Helper } from '@/lib/helper';
+import { resend, SendEmailHtml } from "@/lib/email";
+import { getClient } from '@/lib/prisma';
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache';
+import { generateToken } from '@/lib/auth';
+import { dateOffset } from '@/lib/utils';
 
 export async function resetPasswordEmail(formData: FormData){
   const email = formData.get('email') as string | null;
