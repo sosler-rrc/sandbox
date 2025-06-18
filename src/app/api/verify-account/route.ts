@@ -1,36 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getClient } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getClient } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
-  const {searchParams} = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   const client = getClient();
 
-  if(token){
+  if (token) {
     const emailVerification = await client.emailVerificationToken.findFirst({
       where: {
-        token: token
-      }
+        token: token,
+      },
     });
 
-    if(emailVerification && Date.now() <= emailVerification.expiresAt.getTime()){
+    if (
+      emailVerification &&
+      Date.now() <= emailVerification.expiresAt.getTime()
+    ) {
       await client.user.update({
         where: {
-          id: emailVerification.userId
+          id: emailVerification.userId,
         },
         data: {
-          emailVerified: true
-        }
-      })
+          emailVerified: true,
+        },
+      });
 
       await client.emailVerificationToken.delete({
         where: {
-          token: token
-        }
-      })
+          token: token,
+        },
+      });
     }
   }
 
-  const response = NextResponse.redirect(new URL('/', request.url))
+  const response = NextResponse.redirect(new URL("/", request.url));
   return response;
 }
