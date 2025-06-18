@@ -17,7 +17,7 @@ import {
 export async function loginAction(email: string, password: string){
   const client = getClient();
   
-  const existingUser = await client.appUser.findFirst({
+  const existingUser = await client.user.findFirst({
     where: {
       email: email,
     },
@@ -71,7 +71,7 @@ export async function signupAction(newUser: UserSignup) {
     }
   }
   
-  const existingUserEmail = await client.appUser.findFirst({
+  const existingUserEmail = await client.user.findFirst({
     where: {
       email: newUser.email
     }
@@ -83,7 +83,7 @@ export async function signupAction(newUser: UserSignup) {
     }
   }
   
-  const appUser = await client.appUser.create({
+  const user = await client.user.create({
     data: {
       email: newUser.email,
       emailVerified: false,
@@ -94,12 +94,12 @@ export async function signupAction(newUser: UserSignup) {
   await client.userKey.create({
     data: {
       hashedPassword: hashedPass,
-      userId: appUser.id
+      userId: user.id
     }
   })
 
   const sessionToken = generateToken();
-  const session = await createSession(sessionToken, appUser.id);
+  const session = await createSession(sessionToken, user.id);
 
   const cookieStore = await cookies();
 
@@ -111,7 +111,7 @@ export async function signupAction(newUser: UserSignup) {
     path: "/",
   });
 
-  await createEmailVerification(appUser.id);
+  await createEmailVerification(user.id);
 
   redirect("/");
 }

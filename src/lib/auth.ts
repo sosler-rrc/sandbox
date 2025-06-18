@@ -114,7 +114,7 @@ export async function createEmailVerification(userId: string){
   const token = generateToken();
   const expiresAt = new Date(Date.now() + dateOffset(1))
 
-  const user = await prisma.appUser.findFirstOrThrow({
+  const user = await prisma.user.findFirstOrThrow({
     where: {
       id: userId
     }

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     });
 
     if(emailVerification && Date.now() <= emailVerification.expiresAt.getTime()){
-      await client.appUser.update({
+      await client.user.update({
         where: {
           id: emailVerification.userId
         },

@@ -20,7 +20,7 @@ export async function resetPasswordEmail(formData: FormData){
   const token = generateToken();
   const expires = new Date(Date.now() + dateOffset(1))
 
-  const user = await client.appUser.findFirst({
+  const user = await client.user.findFirst({
     where: {
       email: email
     }

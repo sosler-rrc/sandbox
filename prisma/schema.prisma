@@ -8,7 +8,7 @@ datasource db {
   url       = env("DATABASE_URL")
 }
 
-model AppUser {
+model User {
   id            String        @id @default(uuid())
   email         String        @unique
   emailVerified Boolean       @default(false)
@@ -17,20 +17,24 @@ model AppUser {
   sessions                  UserSession[]
   emailVerificationTokens   EmailVerificationToken[]
   passwordResetTokens       PasswordResetToken[]
+  sentFriendRequests        FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests    FriendRequest[] @relation("ReceivedFriendRequests")
+  user1Friends          UserFriend[]    @relation("User1Friends")
+  user2Friends          UserFriend[]    @relation("User2Friends")
 }
 
 model UserKey {
   id             String   @id @default(uuid())
   hashedPassword String
   userId         String   @unique
-  user           AppUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSession {
   id        String            @id @default(uuid())
   expiresAt DateTime
   userId    String      
-  user      AppUser           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailVerificationToken {
@@ -40,7 +44,7 @@ model EmailVerificationToken {
   createdAt DateTime          @default(now())
   userId    String
 
-  user      AppUser           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
@@ -50,5 +54,38 @@ model PasswordResetToken {
   createdAt DateTime          @default(now())
   userId    String
 
-  user      AppUser           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FriendRequest {
+  id          String    @id @default(uuid())
+  senderId    String
+  receiverId  String
+  status      FriendRequestStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sender      User   @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User   @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+model UserFriend {
+  id        String   @id @default(uuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime @default(now())
+
+  user1     User  @relation("User1Friends", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2     User  @relation("User2Friends", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  @@unique([user1Id, user2Id])
 }
