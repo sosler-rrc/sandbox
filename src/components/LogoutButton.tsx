@@ -2,6 +2,7 @@
 
 import { logoutAction } from '@/app/login/actions';
 import { useState } from 'react';
+import { Button } from './Button';
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,11 +13,11 @@ export default function LogoutButton() {
   }
   
   return (
-    <button
+    <Button
       onClick={handleSignOut}
       disabled={isLoading}
-      className="bg-red-600 hover:bg-red-700 text-white cursor-pointer font-semibold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-70">
+      variant='red'>
       {isLoading ? 'Signing out...' : 'Sign Out'}
-    </button>
+    </Button>
   );
 }

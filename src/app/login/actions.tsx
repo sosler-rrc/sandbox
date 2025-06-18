@@ -53,7 +53,7 @@ export async function loginAction(email: string, password: string){
   }
   
   revalidatePath('/', 'layout')
-  return redirect("/");
+  redirect("/");
 }
 
 export async function signupAction(newUser: UserSignup) {
@@ -113,7 +113,7 @@ export async function signupAction(newUser: UserSignup) {
 
   await createEmailVerification(appUser.id);
 
-  return redirect("/");
+  redirect("/");
 }
 
 export async function logoutAction(){
@@ -130,5 +130,5 @@ export async function logoutAction(){
   deleteSessionTokenCookie();
   
   revalidatePath('/', 'layout')
-  return redirect("/login")
+  redirect("/login")
 }
