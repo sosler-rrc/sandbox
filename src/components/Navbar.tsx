@@ -7,7 +7,7 @@ import { Button } from "./Button";
 
 export function NavBar({ accountVerified = false }) {
   return (
-    <div className="flex flex-row justify-between m-4">
+    <div className="flex flex-row justify-between mb-4">
       <div>
         <h1 className="text-4xl">Sandbox</h1>
       </div>
@@ -19,9 +19,6 @@ export function NavBar({ accountVerified = false }) {
         ) : (
           <></>
         )}
-        <Button>
-          <Link href={"/"}>Friends</Link>
-        </Button>
         <div className="ml-2">
           <LogoutButton />
         </div>

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "@/lib/auth";
 import { NavBar } from "@/components/Navbar";
+import FriendsList from "@/components/FriendsList";
 
 export default async function Home() {
   const session = await getCurrentSession();
@@ -10,12 +11,16 @@ export default async function Home() {
   }
 
   return (
-    <div>
-      <NavBar accountVerified={session.user?.emailVerified}></NavBar>
-      <div></div>
-      <span>Welcome {session.user?.userName}!</span>
-      <br />
-      <span>{session.user?.email}</span>
+    <div className="m-4">
+      <NavBar accountVerified={session.user?.emailVerified} />
+      <div className="flex justify-between">
+        <div className="w-full">
+          <span>Welcome {session.user?.userName}!</span>
+          <br />
+          <span>{session.user?.email}</span>
+        </div>
+        <FriendsList />
+      </div>
     </div>
   );
 }

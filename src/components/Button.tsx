@@ -23,7 +23,7 @@ export function Button({
   onBlur,
   ...props
 }: ButtonProps) {
-  const baseClassName = "p-2 mb-2 rounded-sm text-neutral-100 cursor-pointer";
+  const baseClassName = "p-2 rounded-sm text-neutral-100 cursor-pointer";
 
   const variantClasses = {
     green: "bg-green-600 hover:bg-green-800",
