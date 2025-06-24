@@ -22,6 +22,8 @@ model User {
   receivedFriendRequests    FriendRequest[] @relation("ReceivedFriendRequests")
   user1Friends          UserFriend[]    @relation("User1Friends")
   user2Friends          UserFriend[]    @relation("User2Friends")
+  userBlocks            BlockedUser[]    @relation("UserBlocks")
+  userBlockedBy         BlockedUser[]    @relation("BlockedBy")
 }
 
 model UserKey {
@@ -62,7 +64,6 @@ model FriendRequest {
   id          String    @id @default(uuid())
   senderId    String
   receiverId  String
-  status      FriendRequestStatus @default(PENDING)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -72,11 +73,16 @@ model FriendRequest {
   @@unique([senderId, receiverId])
 }
 
-enum FriendRequestStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-  BLOCKED
+model BlockedUser {
+  id        String    @id @default(uuid())
+  blockerId String   // User who is blocking
+  blockedId String   // User who got blocked
+  createdAt DateTime @default(now())
+  
+  blocker   User @relation("UserBlocks", fields: [blockerId], references: [id])
+  blocked   User @relation("BlockedBy", fields: [blockedId], references: [id])
+  
+  @@unique([blockerId, blockedId])
 }
 
 model UserFriend {

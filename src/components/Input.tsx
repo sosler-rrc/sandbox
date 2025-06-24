@@ -1,20 +1,19 @@
-"use client"
-import * as React from "react"
+"use client";
+import * as React from "react";
 
 interface InputProps {
-  type?: string
-  id?: string
-  name?: string
-  placeholder?: string
-  required?: boolean
-  disabled?: boolean
-  className?: string
-  value?: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+  type?: string;
+  id?: string;
+  name?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  className?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
-
 
 export function Input({
   type = "text",
@@ -30,11 +29,14 @@ export function Input({
   onFocus,
   ...props
 }: InputProps) {
-  const baseClassName = "mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50"
-  const combinedClassName = className ? `${baseClassName} ${className}` : baseClassName
+  const baseClassName =
+    "border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50";
+  const combinedClassName = className
+    ? `${baseClassName} ${className}`
+    : baseClassName;
 
   return (
-    <input 
+    <input
       className={combinedClassName}
       type={type}
       id={id}
@@ -48,5 +50,5 @@ export function Input({
       onFocus={onFocus}
       {...props}
     />
-  )
+  );
 }

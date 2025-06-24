@@ -6,14 +6,38 @@ import { UserSignup } from "@/models/UserSignup";
 import { loginAction, signupAction } from "./actions";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { getCurrentSession } from "@/lib/auth";
 
 export default function Page() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const method = searchParams.get("type") ?? "login";
+  const router = useRouter();
 
-  // reset ui state
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const session = await response.json();
+          if (session?.user) {
+            router.push("/dashboard");
+            return;
+          }
+        }
+      } catch (error) {
+        console.log("No valid session found");
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
   useEffect(() => {
     setLoginError("");
   }, [method]);
@@ -45,8 +69,7 @@ export default function Page() {
 
       setLoginError(response.message);
     } catch (e) {
-      // console.error("Auth error:", e);
-      // setLoginError("An unexpected error occurred");
+      console.error("Auth error:", e);
     } finally {
       setIsLoading(false);
     }
@@ -57,12 +80,11 @@ export default function Page() {
       <div className="flex flex-col justify-center">
         <form
           className="flex flex-col justify-center w-3xs"
-          action={handleLogin}
-        >
+          action={handleLogin}>
           {method == "signup" && (
             <>
               <label htmlFor="email">Email:</label>
-              <input
+              <Input
                 className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50"
                 placeholder="Email"
                 type="email"
@@ -74,7 +96,7 @@ export default function Page() {
             </>
           )}
           <label htmlFor="username">Username:</label>
-          <input
+          <Input
             className="mb-4 border-[1.5px] rounded-sm border-neutral-600 p-[4px] bg-neutral-50"
             placeholder="Username"
             type="text"
@@ -112,8 +134,7 @@ export default function Page() {
           {method == "login" && (
             <Link
               href={"/login/reset-confirmation"}
-              className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
-            >
+              className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
               Forgot Password
             </Link>
           )}
@@ -126,15 +147,17 @@ export default function Page() {
 
           {method == "signup" ? (
             <div className="flex flex-col mt-4">
-              <Button variant="green" disabled={isLoading} type="submit">
+              <Button
+                variant="green"
+                disabled={isLoading}
+                type="submit">
                 {isLoading ? "Signing Up..." : "Sign Up"}
               </Button>
               <span>
                 Already a user?
                 <Link
                   href={"/login?type=login"}
-                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                >
+                  className="text-blue-600 hover:text-blue-800 cursor-pointer">
                   {" "}
                   Log in
                 </Link>
@@ -142,15 +165,17 @@ export default function Page() {
             </div>
           ) : (
             <div className="flex flex-col mt-4">
-              <Button variant="green" disabled={isLoading} type="submit">
+              <Button
+                variant="green"
+                disabled={isLoading}
+                type="submit">
                 {isLoading ? "Logging In..." : "Login"}
               </Button>
               <span>
                 Not a user yet?
                 <Link
                   href={"/login?type=signup"}
-                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                >
+                  className="text-blue-600 hover:text-blue-800 cursor-pointer">
                   {" "}
                   Sign up
                 </Link>

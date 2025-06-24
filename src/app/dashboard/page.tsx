@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "@/lib/auth";
 import { NavBar } from "@/components/Navbar";
-import FriendsList from "@/components/FriendsList";
+import FriendsList from "@/app/dashboard/components/FriendsList";
 
 export default async function Home() {
   const session = await getCurrentSession();
 
-  if (!session) {
+  if (!session || session.user == null) {
     redirect("/login");
   }
 
@@ -19,7 +19,7 @@ export default async function Home() {
           <br />
           <span>{session.user?.email}</span>
         </div>
-        <FriendsList />
+        <FriendsList userId={session.user?.id} />
       </div>
     </div>
   );
