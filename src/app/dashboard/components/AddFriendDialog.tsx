@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { SendFriendRequest } from "../actions";
+import { toast } from "sonner";
 
 interface AddFriendDialogProps {
   userId: string;
@@ -29,8 +30,13 @@ export default function AddFriendDialog({ userId, drawerState, setIsOpen }: AddF
 
   async function handleSendFriendRequest() {
     const result = await SendFriendRequest(userId, username);
-    if (result?.message) {
+    if (result?.message && !result.success) {
       setError(result.message);
+    } else {
+      toast("Friend request successfully sent", {
+        position: "top-center",
+      });
+      setIsOpen(false);
     }
   }
 
@@ -47,12 +53,12 @@ export default function AddFriendDialog({ userId, drawerState, setIsOpen }: AddF
                 <Input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-64"
+                  className="w-64 mr-4 h-8"
                   type="text"
                   placeholder="Enter username"
                 />
                 <Button
-                  className="w-16"
+                  className="w-16 h-8"
                   onClick={() => handleSendFriendRequest()}>
                   Add
                 </Button>

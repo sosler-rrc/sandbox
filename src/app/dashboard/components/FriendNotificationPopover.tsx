@@ -36,7 +36,7 @@ export default function FriendNotificationPopover({
             {receivedFriendRequests.map((x) => (
               <div
                 key={x.id}
-                className="flex flex-row items-center justify-between">
+                className="flex flex-row items-center justify-between mb-2">
                 <div>{x.sender.userName}</div>
                 <div>
                   <Button
@@ -58,11 +58,11 @@ export default function FriendNotificationPopover({
         )}
         {sentFriendRequests.length > 0 && (
           <div>
-            <h2 className="text-lg border-b mb-2">Sent Friend Requests</h2>
+            <h2 className="text-lg border-b mb-2">Outgoing Friend Requests</h2>
             {sentFriendRequests.map((x) => (
               <div
                 key={x.id}
-                className="flex flex-row items-center justify-between">
+                className="flex flex-row items-center justify-between mb-2">
                 <div>{x.receiver.userName}</div>
                 <div>
                   <Button

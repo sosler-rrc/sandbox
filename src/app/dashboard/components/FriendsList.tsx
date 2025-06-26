@@ -13,6 +13,8 @@ import { User } from "@/models/User";
 import AddFriendDialog from "./AddFriendDialog";
 import { MessageCirclePlus, Trash2, UserSearch } from "lucide-react";
 import FriendNotificationPopover from "./FriendNotificationPopover";
+import DeleteFriendDialog from "./DeleteFriendDialog";
+import { UserFriend } from "@/models/UserFriend";
 
 interface FriendsListProps {
   userId: string;
@@ -20,17 +22,18 @@ interface FriendsListProps {
 
 export default function FriendsList({ userId }: FriendsListProps) {
   const [error, setError] = useState<string | null>(null);
-  const [friends, setFriends] = useState<User[]>([]);
+  const [friends, setFriends] = useState<UserFriend[]>([]);
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<FriendRequest[]>([]);
   const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isAddFriendDialogIsOpen, setAddFriendDialogIsOpen] = useState(false);
+  const [isDeleteFriendDialogIsOpen, setDeleteFriendDialogIsOpen] = useState(false);
 
   async function loadFriends() {
     try {
       const userFriends = await GetUserFriends(userId);
       setFriends(userFriends);
     } catch (err) {
-      setError("An error occurred");
+      setError("An error occurred while loading friends list");
     }
   }
 
@@ -39,24 +42,27 @@ export default function FriendsList({ userId }: FriendsListProps) {
       setReceivedFriendRequests(await GetUserReceivedFriendsRequests(userId));
       setSentFriendRequests(await GetUserSentFriendsRequests(userId));
     } catch (err) {
-      setError("An error occurred");
+      setError("An error occurred while loading friend requests");
     }
-    console.log(friends);
   }
 
-  useEffect(() => {
+  const refreshFriends = () => {
     loadFriendRequests();
     loadFriends();
-  }, [userId]);
+  };
+
+  useEffect(() => {
+    refreshFriends();
+  }, [userId, isAddFriendDialogIsOpen, isDeleteFriendDialogIsOpen]);
 
   async function handleIncomingAcceptRequest(requestId: string) {
     await AddUserFriend(requestId);
-    loadFriendRequests();
+    refreshFriends();
   }
 
   async function handleIncomingCancelRequest(requestId: string) {
     await CancelFriendRequest(requestId);
-    loadFriendRequests();
+    refreshFriends();
   }
 
   return (
@@ -69,25 +75,33 @@ export default function FriendsList({ userId }: FriendsListProps) {
           onCancelRequest={handleIncomingCancelRequest}
         />
         <h1 className="text-center w-full text-lg">Friends</h1>
-        <Button onClick={() => setIsOpen(true)}>Add</Button>
+        <Button onClick={() => setAddFriendDialogIsOpen(true)}>Add</Button>
       </div>
       <AddFriendDialog
         userId={userId}
-        setIsOpen={setIsOpen}
-        drawerState={isOpen}
+        setIsOpen={setAddFriendDialogIsOpen}
+        drawerState={isAddFriendDialogIsOpen}
       />
+
       {friends.map((x) => (
         <div
           key={x.id}
           className="flex flex-row px-6 justify-between">
-          <div>{x.userName}</div>
+          <div>{x.friendUser.userName}</div>
           <div>
             <button className="text-emerald-600 cursor-pointer px-1">
               <MessageCirclePlus />
             </button>
-            <button className="text-red-500 cursor-pointer px-1">
+            <button
+              className="text-red-500 cursor-pointer px-1"
+              onClick={() => setDeleteFriendDialogIsOpen(true)}>
               <Trash2 />
             </button>
+            <DeleteFriendDialog
+              friendUserId={x.id}
+              setIsOpen={setDeleteFriendDialogIsOpen}
+              drawerState={isDeleteFriendDialogIsOpen}
+            />
           </div>
         </div>
       ))}

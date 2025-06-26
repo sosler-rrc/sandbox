@@ -2,6 +2,7 @@
 import { getClient } from "@/lib/prisma";
 import { FriendRequest } from "@/models/FriendRequest";
 import { User } from "@/models/User";
+import { UserFriend } from "@/models/UserFriend";
 
 export async function SendFriendRequest(senderUserId: string, username: string) {
   const client = getClient();
@@ -84,7 +85,7 @@ export async function CancelFriendRequest(requestId: string) {
 }
 
 export async function GetUserFriends(userId: string) {
-  let friends = new Array<User>();
+  let friends = new Array<UserFriend>();
 
   const client = getClient();
   const userFriends = await client.userFriend.findMany({
@@ -97,9 +98,12 @@ export async function GetUserFriends(userId: string) {
     },
   });
 
-  friends = userFriends.map<User>((friendship) =>
-    friendship.user1Id === userId ? friendship.user2 : friendship.user1
-  );
+  friends = userFriends.map((x) => {
+    return {
+      id: x.id,
+      friendUser: x.user1Id == userId ? x.user2 : x.user1,
+    };
+  });
 
   return friends;
 }
@@ -148,4 +152,13 @@ export async function GetUserReceivedFriendsRequests(userId: string) {
   });
 
   return friendRequests;
+}
+
+export async function DeleteUserFriend(userFriendId: string) {
+  const client = getClient();
+  await client.userFriend.delete({
+    where: {
+      id: userFriendId,
+    },
+  });
 }

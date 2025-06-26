@@ -20,10 +20,10 @@ export function Button({
   const baseClassName = "p-2 rounded-sm text-neutral-100 cursor-pointer";
 
   const variantClasses = {
-    green: "bg-green-600 hover:bg-green-800",
+    green: "bg-emerald-600 hover:bg-emerald-800",
     red: "bg-red-600 hover:bg-red-800",
     blue: "bg-blue-600 hover:bg-blue-800",
-    gray: "bg-gray-600 hover:bg-gray-800",
+    gray: "bg-gray-500 hover:bg-gray-700",
     yellow: "bg-yellow-600 hover:bg-yellow-800",
   };
 
