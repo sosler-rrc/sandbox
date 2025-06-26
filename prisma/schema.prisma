@@ -9,35 +9,36 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  email         String        @unique
-  userName      String        @unique
-  emailVerified Boolean       @default(false)
-  createdAt     DateTime      @default(now())
+  id                        String        @id @default(uuid())
+  email                     String        @unique
+  userName                  String        @unique
+  emailVerified             Boolean       @default(false)
+  createdAt                 DateTime      @default(now())
   userKey                   UserKey?
   sessions                  UserSession[]
   emailVerificationTokens   EmailVerificationToken[]
   passwordResetTokens       PasswordResetToken[]
-  sentFriendRequests        FriendRequest[] @relation("SentFriendRequests")
-  receivedFriendRequests    FriendRequest[] @relation("ReceivedFriendRequests")
-  user1Friends          UserFriend[]    @relation("User1Friends")
-  user2Friends          UserFriend[]    @relation("User2Friends")
-  userBlocks            BlockedUser[]    @relation("UserBlocks")
-  userBlockedBy         BlockedUser[]    @relation("BlockedBy")
+  sentFriendRequests        FriendRequest[]       @relation("SentFriendRequests")
+  receivedFriendRequests    FriendRequest[]       @relation("ReceivedFriendRequests")
+  user1Friends              UserFriend[]          @relation("User1Friends")
+  user2Friends              UserFriend[]          @relation("User2Friends")
+  userBlocks                BlockedUser[]         @relation("UserBlocks")
+  userBlockedBy             BlockedUser[]         @relation("BlockedBy")
+  connections               WebsocketConnection[] @relation("Connections")
 }
 
 model UserKey {
   id             String   @id @default(uuid())
   hashedPassword String
   userId         String   @unique
-  user           User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSession {
   id        String            @id @default(uuid())
   expiresAt DateTime
   userId    String      
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailVerificationToken {
@@ -47,7 +48,7 @@ model EmailVerificationToken {
   createdAt DateTime          @default(now())
   userId    String
 
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
@@ -57,7 +58,7 @@ model PasswordResetToken {
   createdAt DateTime          @default(now())
   userId    String
 
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model FriendRequest {
@@ -67,32 +68,42 @@ model FriendRequest {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  sender      User   @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver    User   @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender      User      @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User      @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@unique([senderId, receiverId])
 }
 
 model BlockedUser {
   id        String    @id @default(uuid())
-  blockerId String   // User who is blocking
-  blockedId String   // User who got blocked
-  createdAt DateTime @default(now())
+  blockerId String    // User who is blocking
+  blockedId String    // User who got blocked
+  createdAt DateTime  @default(now())
   
-  blocker   User @relation("UserBlocks", fields: [blockerId], references: [id])
-  blocked   User @relation("BlockedBy", fields: [blockedId], references: [id])
+  blocker   User      @relation("UserBlocks", fields: [blockerId], references: [id])
+  blocked   User      @relation("BlockedBy", fields: [blockedId], references: [id])
   
   @@unique([blockerId, blockedId])
 }
 
 model UserFriend {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   user1Id   String
   user2Id   String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
-  user1     User  @relation("User1Friends", fields: [user1Id], references: [id], onDelete: Cascade)
-  user2     User  @relation("User2Friends", fields: [user2Id], references: [id], onDelete: Cascade)
+  user1     User      @relation("User1Friends", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2     User      @relation("User2Friends", fields: [user2Id], references: [id], onDelete: Cascade)
 
   @@unique([user1Id, user2Id])
+}
+
+model WebsocketConnection {
+  id            String   @id @default(uuid())
+  connectionId  String   @unique
+  userId        String
+  connectedAt   DateTime @default(now())
+  lastSeen      DateTime @default(now())
+
+  user     User           @relation("Connections", fields: [userId], references: [id], onDelete: Cascade)
 }
